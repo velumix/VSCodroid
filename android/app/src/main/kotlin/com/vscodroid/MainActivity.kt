@@ -3826,11 +3826,15 @@ class MainActivity : AppCompatActivity() {
                     // than breaking the rules around it.
                     '  .activitybar .action-item:has(> .action-label.separator),',
                     '  .context-view .action-item:has(> .action-label.separator) { min-height: 0 !important; }',
-                    // Unprefixed, so it is wider than its name: the workbench also uses
-                    // .slider for the colour picker, not only the scrollbar. Harmless
-                    // there because that strip is already far wider than 12px, but
-                    // narrow it and this rule starts deciding its width.
-                    '  .slider { min-width: 12px !important; }',
+                    // Slim, unobtrusive mobile scrollbars (5px pill style) so they do not cover code or content
+                    '  .monaco-scrollable-element > .scrollbar.vertical { width: 5px !important; }',
+                    '  .monaco-scrollable-element > .scrollbar.horizontal { height: 5px !important; }',
+                    '  .monaco-scrollable-element > .scrollbar > .slider { width: 5px !important; border-radius: 3px !important; background: rgba(128, 128, 128, 0.35) !important; left: 0 !important; }',
+                    '  .monaco-scrollable-element > .scrollbar.horizontal > .slider { height: 5px !important; top: 0 !important; }',
+                    '  .monaco-scrollable-element > .scrollbar > .slider:hover,',
+                    '  .monaco-scrollable-element > .scrollbar > .slider.active { background: rgba(128, 128, 128, 0.65) !important; }',
+                    '  ::-webkit-scrollbar { width: 5px !important; height: 5px !important; }',
+                    '  ::-webkit-scrollbar-thumb { background: rgba(128, 128, 128, 0.35) !important; border-radius: 3px !important; }',
                     // A modal dialog is 480px wide on a 411px phone, and the
                     // overflow is not shared: `.monaco-dialog-modal-block` centres
                     // the box, so 34.5px hangs off each side and the left half is
@@ -3883,6 +3887,25 @@ class MainActivity : AppCompatActivity() {
                     '  .part.statusbar .statusbar-item { font-size: 13px !important; }',
                     '  .tabs-container .tab .label-name { font-size: 14px !important; }',
                     '  .monaco-list-row { font-size: 13px !important; }',
+                    // Compact editor gutter and margins on mobile to maximize code width
+                    '  .monaco-editor .glyph-margin { width: 14px !important; }',
+                    '  .monaco-editor .margin-view-overlays .line-numbers { font-size: 12px !important; padding-right: 4px !important; }',
+                    // Compact tab horizontal padding so more tabs fit without horizontal scrolling
+                    '  .tabs-container .tab { padding-left: 6px !important; padding-right: 6px !important; }',
+                    '  .tabs-container .tab .tab-actions { margin-left: 2px !important; }',
+                    // Mobile-responsive quick input / Command Palette
+                    '  .quick-input-widget { max-width: 96vw !important; width: 96vw !important; left: 2vw !important; margin-left: 0 !important; }',
+                    // Find widget within screen bounds
+                    '  .monaco-editor .find-widget { max-width: 94vw !important; }',
+                    '  .monaco-editor .find-widget .monaco-inputbox { min-width: 80px !important; }',
+                    // Notifications fit without right-side clipping
+                    '  .notifications-toasts, .monaco-notification-toasts { max-width: 94vw !important; width: 94vw !important; right: 3vw !important; }',
+                    // IntelliSense suggestions fit viewport and hide bulky details column
+                    '  .monaco-editor .suggest-widget { max-width: 92vw !important; }',
+                    '  .monaco-editor .suggest-widget .details { display: none !important; }',
+                    // Context menus do not overflow viewport
+                    '  .context-view .monaco-menu { max-width: 92vw !important; }',
+                    '  .monaco-menu .action-menu-item { max-width: 92vw !important; overflow: hidden !important; text-overflow: ellipsis !important; }',
                     '}'
                 ].join('\n');
                 document.head.appendChild(s);

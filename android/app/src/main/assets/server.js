@@ -418,6 +418,24 @@ if (!fs.existsSync(rehEntryPoint)) {
         log('error', 'The editor still works; a formatter is just never suggested.');
     }
 
+    // Give the Extension Host and Pty Host worker threads platform compatibility.
+    // Worker threads run in new V8 isolates and do not evaluate NODE_OPTIONS by default.
+    const platformFixPath = path.join(SERVER_DIR, 'platform-fix.js');
+    const bootstrapForkPath = path.join(REH_DIR, 'out/bootstrap-fork.js');
+    if (fs.existsSync(bootstrapForkPath) && fs.existsSync(platformFixPath)) {
+        try {
+            const content = fs.readFileSync(bootstrapForkPath, 'utf8');
+            const marker = '/* vscodroid-platform-fix */';
+            if (!content.includes(marker)) {
+                const inject = `${marker} try { require(${JSON.stringify(platformFixPath)}); } catch (e) { /* ignore */ }\n`;
+                writeThroughRename(bootstrapForkPath, inject + content);
+                log('info', 'Extension host platform compatibility hook injected into bootstrap-fork.js');
+            }
+        } catch (e) {
+            log('error', `Could not inject platform fix into bootstrap-fork.js: ${e.message}`);
+        }
+    }
+
     // Build server arguments.
     //
     // No connection-token flag of any kind, and that absence is the security
@@ -543,6 +561,22 @@ if (!fs.existsSync(rehEntryPoint)) {
     } catch (e) {
         log('warn', `dns-proxy not usable at ${dnsProxyPath} (${e.message}); ` +
             'musl clients will not resolve names');
+    }
+
+    if (fs.existsSync(platformFixPath)) {
+        try {
+            require(platformFixPath);
+            if (!execArgv.some((arg) => arg.includes('platform-fix.js'))) {
+                execArgv.push(`--require=${platformFixPath}`);
+            }
+            childEnv.VSCODROID_EXTENSION_HOST = '1';
+            childEnv.VSCODROID_FORCE_PLATFORM_LINUX = '1';
+            childEnv.VSCODROID_SERVER_DIR = SERVER_DIR;
+            childEnv.VSCODROID_FILES_DIR = path.dirname(SERVER_DIR);
+            childEnv.VSCODROID_NATIVE_LIB_DIR = path.dirname(process.execPath);
+        } catch (e) {
+            log('warn', `platform-fix not usable at ${platformFixPath} (${e.message})`);
+        }
     }
 
     const server = fork(serverArgs[0], serverArgs.slice(1), {

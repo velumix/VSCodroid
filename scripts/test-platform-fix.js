@@ -57,6 +57,11 @@ const cases = [
     ['an ordinary user script', `${tmp}/home/serve.js`, [], {}, 'android'],
     // The opt-in npm and npx set.
     ['the npm opt-in', `${tmp}/home/install.js`, [], { VSCODROID_PLATFORM_FIX: '1' }, 'linux'],
+    // VS Code Extension Host and extensions
+    ['extension host argument', `${tmp}/home/worker.js`, ['--type=extensionHost'], {}, 'linux'],
+    ['extension host bootstrap entry', `${tmp}/home/bootstrap-fork.js`, [], {}, 'linux'],
+    ['extension script under .vscodroid/extensions', `${tmp}/home/.vscodroid/extensions/pub.ext-1.0/index.js`, [], {}, 'linux'],
+    ['force platform linux flag', `${tmp}/home/tool.js`, [], { VSCODROID_FORCE_PLATFORM_LINUX: '1' }, 'linux'],
 ];
 
 let checked = 0;

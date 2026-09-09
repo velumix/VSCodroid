@@ -183,11 +183,11 @@ class ExtraKeyButton @JvmOverloads constructor(
 
     init {
         gravity = Gravity.CENTER
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
         typeface = Typeface.MONOSPACE
         maxLines = 1
         minWidth = dpToPx(48)
-        minimumHeight = dpToPx(56)
+        minimumHeight = dpToPx(44)
         isClickable = true
         isFocusable = false
 
@@ -200,7 +200,7 @@ class ExtraKeyButton @JvmOverloads constructor(
         // API 27 and above, and minSdk here is 33, so the compatibility branch
         // below that is never taken.
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-            this, 8, 13, 1, TypedValue.COMPLEX_UNIT_SP
+            this, 8, 12, 1, TypedValue.COMPLEX_UNIT_SP
         )
 
         // Rounded corner background. This is also what applies the key's

@@ -181,6 +181,8 @@ object Environment {
             "USE_BUILTIN_RIPGREP" to "0",
             "VSCODROID_PORT" to port.toString(),
             "VSCODROID_VERSION" to getVersionName(context),
+            "VSCODROID_NATIVE_LIB_DIR" to nativeLibDir,
+            "VSCODROID_FILES_DIR" to filesDir,
         )
 
         // The name pip actually reads, and what makes a CA the device owner

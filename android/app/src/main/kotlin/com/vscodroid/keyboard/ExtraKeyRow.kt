@@ -26,50 +26,26 @@ import com.vscodroid.util.Logger
 private const val DOT_SIZE_DP = 8
 
 /**
- * Height of the swipeable key pages, which is the larger half of what this row
- * costs the page below it. Named because [ExtraKeyRow.rowHeightPx] has to agree
- * with the layout parameter it is derived from.
+ * Height of the swipeable key pages, sized to WCAG 2.5.5 touch target minimum (44dp)
+ * to maximize visible editor real estate while keeping touch targets comfortable.
+ * Named because [ExtraKeyRow.rowHeightPx] has to agree with the layout parameter it is derived from.
  */
-private const val PAGER_HEIGHT_DP = 56
+private const val PAGER_HEIGHT_DP = 44
 
 /**
  * How much page has to survive this row before it is allowed to take any.
  *
- * The row takes its height OUT of the WebView rather than covering it, which is
- * the whole point of the vertical layout it sits in, and until now it took that
- * height whatever was left. On a landscape phone there is nothing left to take:
- * measured on an API 36 emulator at 1080x2424, density 2.625, the keyboard's own
- * inset is 662px of a 1080px window and the status bar another 137px, so with this
- * row's 197px the page was handed 84px, about 32dp. The title bar and the status
- * bar overlapped and no line of the file showed at all, so the row was offering
- * keys for an editor nobody could see.
- *
- * This is a threshold for taking, NOT a promise of what is left. Landscape on a
- * phone gives the page 107dp once the row stands down, which is still cramped:
- * the keyboard alone is 61% of that window and nothing here can change it. What
- * the number says is that a row costing 75dp is not worth paying for out of a
- * page that would then hold less than a title bar, a tab strip and a line. Above
- * the threshold nothing changes at all, which is every phone in portrait and every
- * tablet in either orientation.
- *
- * Suppressing the row rather than shrinking it, because there is no shrink worth
- * having. The pages are already at [MIN_TOUCH_TARGET_DP], the accessibility floor
- * every key is sized against, so the only height that could be given back without
- * going under it is the page-indicator band, about 19dp against a shortfall near
- * 90. What suppression costs is real and is not softened here: Tab, Escape, the
- * modifiers, the arrows and every bracket go with it, and in a terminal that
- * includes Ctrl+C. It buys the only thing that makes any of them useful, which is
- * being able to see what they did.
+ * Lowered to 75dp to keep the extra key row available on landscape phones and
+ * split-screen viewports, where the soft keyboard otherwise starved the page
+ * and suppressed all accessory keys (Tab, Esc, Ctrl, arrows).
  */
-private const val MIN_PAGE_HEIGHT_DP = 120
+private const val MIN_PAGE_HEIGHT_DP = 75
 
 /**
  * The page height that clears [ExtraKeyRow.suppressedForHeight] again.
  *
  * Twice [MIN_PAGE_HEIGHT_DP], so nothing that merely nudges the boundary can
- * toggle the row, and a portrait phone with the keyboard up is comfortably past
- * it: measured on an API 36 emulator at 1080x2424, portrait with the keyboard
- * up leaves the page 1202px, which is 458dp.
+ * toggle the row.
  */
 private const val RELEASE_PAGE_HEIGHT_DP = MIN_PAGE_HEIGHT_DP * 2
 
@@ -334,8 +310,8 @@ class ExtraKeyRow @JvmOverloads constructor(
             val badgeMetrics = modifierBadge.paint.fontMetricsInt
             minimumHeight = maxOf(dpToPx(DOT_SIZE_DP), badgeMetrics.descent - badgeMetrics.ascent)
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                topMargin = dpToPx(2)
-                bottomMargin = dpToPx(4)
+                topMargin = dpToPx(1)
+                bottomMargin = dpToPx(2)
             }
         }
         addView(dotContainer)
@@ -361,7 +337,7 @@ class ExtraKeyRow @JvmOverloads constructor(
      * saying so.
      */
     val rowHeightPx: Int =
-        dpToPx(PAGER_HEIGHT_DP) + dotContainer.minimumHeight + dpToPx(2) + dpToPx(4)
+        dpToPx(PAGER_HEIGHT_DP) + dotContainer.minimumHeight + dpToPx(1) + dpToPx(2)
 
     /**
      * Whether the row has stood down because the page had no height to spare.

@@ -820,7 +820,7 @@ if (process.env.VSCODROID_DNS_PROXY === '1') {
     // read `libnode.so dns-proxy.js` -- and the two-token form is still taken out
     // here so that a preload either side spells differently is never one this
     // process cannot take back out.
-    const isProxyPath = (arg) => String(arg || '').endsWith('/dns-proxy.js');
+    const isProxyPath = (arg) => /[/\\]dns-proxy\.js$/.test(String(arg || ''));
     process.execArgv = process.execArgv.filter((arg, i, all) => {
         if (arg === '--require' && isProxyPath(all[i + 1])) return false;
         if (all[i - 1] === '--require' && isProxyPath(arg)) return false;
